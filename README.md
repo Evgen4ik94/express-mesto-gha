@@ -1,11 +1,10 @@
-[![Tests](https://github.com/Evgen4ik94/express-mesto-gha/actions)](https://github.com/Evgen4ik94/express-mesto-gha/actions) [![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
 # Проект Mesto фронтенд + бэкенд
 
-```
+
 [![Tests for sprint 13](https://github.com/${Evgen4ik94}/${express-meto-gha}/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/${Evgen4ik94}/${express-meto-gha}/actions/workflows/tests-13-sprint.yml) 
 
 [![Tests for sprint 14](https://github.com/${Evgen4ik94}/${express-meto-gha}/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/${Evgen4ik94}/${express-meto-gha}/actions/workflows/tests-14-sprint.yml)
-```
+
 
 **<h2>Стек:</h2>**
 
