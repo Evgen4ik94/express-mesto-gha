@@ -1,92 +1,86 @@
-const Card = require("../models/card");
+const Card = require('../models/card');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { BadRequestError } = require('../errors/BadRequestError');
+const { ForbiddenError } = require('../errors/ForbiddenError');
 
 // Создаем контроллеры для карточек
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: "Переданы некорректные данные в метод создания карточки",
-        });
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Введены некорретные данные'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-      if (!card) {
-        return res.status(404).send({
-          message: "Карточки не существует",
-        });
-      }
-      return res.send(card);
+function deleteCard(req, res, next) {
+  const { cardId } = req.params;
+
+  Card.findById(cardId)
+    .orFail(() => {
+      throw new NotFoundError('Карточка  не найдена');
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({
-          message: "Некорректный id карточки",
-        });
+    .then((card) => {
+      if (!card.owner.equals(req.user._id)) {
+        return next(new ForbiddenError('Вы не можете удалить чужую карточку'));
       }
-      return res.status(500).send({ message: err.message });
-    });
-};
+      return card.remove()
+        .then(() => {
+          res.send({ message: 'Карточка удалена' });
+        });
+    }).catch(next);
+}
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return res.status(404).send({
-          message: "Запрашиваемая карточка для добавления лайка не найдена",
-        });
+    .then((like) => {
+      if (!like) {
+        throw new NotFoundError('Переданный id не найден');
       }
-      return res.send(card);
+      res.send({ data: like });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({
-          message: "Некорректный id карточки",
-        });
+      if (err.name === 'CastError') {
+        return next(new BadRequestError('Передан некорректный Id'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return res.status(404).send({
-          message: "Запрашиваемая карточка для удаления лайка не найдена",
-        });
+    .then((like) => {
+      if (!like) {
+        throw new NotFoundError('Переданный id не найден');
       }
-      return res.send(card);
+      res.send({ data: like });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({
-          message: "Некорректный id карточки",
-        });
+      if (err.name === 'CastError') {
+        return next(new BadRequestError('Передан некорректный Id'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
@@ -95,5 +89,5 @@ module.exports = {
   createCard,
   deleteCard,
   likeCard,
-  dislikeCard
+  dislikeCard,
 };

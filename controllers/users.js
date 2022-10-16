@@ -1,76 +1,79 @@
-const User = require("../models/user");
+const User = require('../models/user');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { BadRequestError } = require('../errors/BadRequestError');
+const { ConflictError } = require('../errors/ConflictError');
 
 // Создаем контроллеры для пользователей
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" });
+        throw new NotFoundError('Пользователь не найден');
       }
-      return res.send(user);
+      res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        return res
-          .status(400)
-          .send({ message: "Некорректный id пользователя" });
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Передан некорретный Id'));
+        return;
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
     .then((user) => res.send(user))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: "Переданы некорректные данные в метод создания пользователя",
-        });
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Введены некорретные данные'));
       }
-      return res.status(500).send({ message: err.message });
-    });
+      if (err.code === 11000) {
+        return next(new ConflictError('Пользователь с таким email уже существует'));
+      }
+      next(err);
+    })
+    .catch(next);
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
     .then((user) => res.send({
       _id: user._id, avatar: user.avatar, name, about,
     }))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: "Переданы некорректные данные в метод обновления профиля",
-        });
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Введены некорретные данные'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
     .then((user) => res.send({
       _id: user._id, avatar, name: user.name, about: user.about,
     }))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: "Переданы некорректные данные в метод обновления аватар",
-        });
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Введены некорретные данные'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
@@ -79,5 +82,5 @@ module.exports = {
   getUsers,
   createUser,
   updateProfile,
-  updateAvatar
+  updateAvatar,
 };
