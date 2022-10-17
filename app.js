@@ -4,6 +4,12 @@ const bodyParser = require('body-parser'); // Мидлвэр body-parser. Он �
 
 const { PORT = 3000 } = process.env;
 
+module.exports = { // Создаем и экспортируем в контроллеры константы ошибок
+  DefaultError: 500,
+  NotFoundError: 404,
+  BadRequestError: 400,
+};
+
 const app = express();
 
 app.use(bodyParser.json()); // Для собирания JSON-формата
