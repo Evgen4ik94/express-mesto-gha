@@ -6,7 +6,7 @@ const { DefaultError, NotFoundError, BadRequestError } = require('../app');
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(DefaultError).send('Произошла ошибка'));
+    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
 const createCard = (req, res) => {
@@ -17,25 +17,25 @@ const createCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(BadRequestError).send('Передан некорректный Id');
+        return res.status(BadRequestError).send({ message: 'Передан некорректный Id' });
       }
     })
-    .catch(() => res.status(DefaultError).send('Произошла ошибка'));
+    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(NotFoundError).send('Карточки не существует');
+        return res.status(NotFoundError).send({ message: 'Карточки не существует' });
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BadRequestError).send('Некорректный id карточки');
+        return res.status(BadRequestError).send({ message: 'Некорректный id карточки' });
       }
-      return res.status(DefaultError).send('Произошла ошибка');
+      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -48,17 +48,17 @@ const likeCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((like) => {
       if (!like) {
-        return res.status(NotFoundError).send('Переданный id не найден');
+        return res.status(NotFoundError).send({ message: 'Переданный id не найден' });
       }
       res.send({ data: like });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BadRequestError).send('Некорректный id карточки');
+        return res.status(BadRequestError).send({ message: 'Некорректный id карточки' });
       }
     })
-    .catch(() => res.status(DefaultError).send('Произошла ошибка'));
+    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
 const dislikeCard = (req, res) => {
@@ -70,17 +70,17 @@ const dislikeCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((like) => {
       if (!like) {
-        return res.status(NotFoundError).send('Переданный id не найден');
+        return res.status(NotFoundError).send({ message: 'Переданный id не найден' });
       }
       res.send({ data: like });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BadRequestError).send('Некорректный id карточки');
+        return res.status(BadRequestError).send({ message: 'Некорректный id карточки' });
       }
     })
-    .catch(() => res.status(DefaultError).send('Произошла ошибка'));
+    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports = {

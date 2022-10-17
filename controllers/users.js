@@ -7,22 +7,22 @@ const getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(NotFoundError).send('Пользователь не найден');
+        res.status(NotFoundError).send({ message: 'Пользователь не найден' });
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BadRequestError).send('Передан некорректный Id');
+        return res.status(BadRequestError).send({ message: 'Передан некорректный Id' });
       }
-      return res.status(DefaultError).send('Произошла ошибка');
+      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
     });
 };
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(DefaultError).send('Произошла ошибка'));
+    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
 const createUser = (req, res) => {
@@ -33,10 +33,10 @@ const createUser = (req, res) => {
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(BadRequestError).send('Введены некорректные данные');
+        return res.status(BadRequestError).send({ message: 'Введены некорректные данные' });
       }
     })
-    .catch(() => res.status(DefaultError).send('Произошла ошибка'));
+    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
 const updateProfile = (req, res) => {
@@ -49,10 +49,10 @@ const updateProfile = (req, res) => {
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(BadRequestError).send('Введены некорректные данные');
+        return res.status(BadRequestError).send({ message: 'Введены некорректные данные' });
       }
     })
-    .catch(() => res.status(DefaultError).send('Произошла ошибка'));
+    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
 const updateAvatar = (req, res) => {
@@ -65,10 +65,10 @@ const updateAvatar = (req, res) => {
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(BadRequestError).send('Введены некорректные данные');
+        return res.status(BadRequestError).send({ message: 'Введены некорректные данные' });
       }
     })
-    .catch(() => res.status(DefaultError).send('Произошла ошибка'));
+    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports = {
