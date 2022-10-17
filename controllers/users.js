@@ -1,7 +1,6 @@
 const User = require('../models/user');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { BadRequestError } = require('../errors/BadRequestError');
-const { ConflictError } = require('../errors/ConflictError');
 
 // Создаем контроллеры для пользователей
 const getUser = (req, res, next) => {
@@ -36,9 +35,6 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Введены некорретные данные'));
-      }
-      if (err.code === 11000) {
-        return next(new ConflictError('Пользователь с таким email уже существует'));
       }
       next(err);
     })
