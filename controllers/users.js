@@ -1,6 +1,6 @@
 const User = require('../models/user');
 
-const { DefaultError, NotFoundError, BadRequestError } = require('../app');
+const { DefaultError, NotFoundError, BadRequestError } = require('../errors/errors');
 
 // Создаем контроллеры для пользователей
 const getUser = (req, res) => {
@@ -35,8 +35,8 @@ const createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(BadRequestError).send({ message: 'Введены некорректные данные' });
       }
-    })
-    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
+      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const updateProfile = (req, res) => {
@@ -51,8 +51,8 @@ const updateProfile = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(BadRequestError).send({ message: 'Введены некорректные данные' });
       }
-    })
-    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
+      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const updateAvatar = (req, res) => {
@@ -67,8 +67,8 @@ const updateAvatar = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(BadRequestError).send({ message: 'Введены некорректные данные' });
       }
-    })
-    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
+      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
+    });
 };
 
 module.exports = {

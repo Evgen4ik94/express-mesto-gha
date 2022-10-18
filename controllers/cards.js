@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 
-const { DefaultError, NotFoundError, BadRequestError } = require('../app');
+const { DefaultError, NotFoundError, BadRequestError } = require('../errors/errors');
 
 // Создаем контроллеры для карточек
 const getCards = (req, res) => {
@@ -19,8 +19,8 @@ const createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(BadRequestError).send({ message: 'Передан некорректный Id' });
       }
-    })
-    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
+      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const deleteCard = (req, res) => {
@@ -57,8 +57,8 @@ const likeCard = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(BadRequestError).send({ message: 'Некорректный id карточки' });
       }
-    })
-    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
+      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const dislikeCard = (req, res) => {
@@ -79,8 +79,8 @@ const dislikeCard = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(BadRequestError).send({ message: 'Некорректный id карточки' });
       }
-    })
-    .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
+      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
+    });
 };
 
 module.exports = {
