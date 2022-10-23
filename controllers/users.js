@@ -1,6 +1,10 @@
-const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+const NotFound = require('../errors/NotFoundError');
+const BadRequest = require('../errors/BadRequest');
+const ConflictError = require('../errors/ConflictError');
+const AuthError = require('../errors/AuthError');
 
 const { DefaultError, NotFoundError, BadRequestError } = require('../errors/errors');
 
@@ -107,4 +111,5 @@ module.exports = {
   createUser,
   updateProfile,
   updateAvatar,
+  login,
 };
