@@ -1,6 +1,7 @@
 const express = require('express'); // Подключаем экспресс
 const mongoose = require('mongoose'); // И мангуста
 const bodyParser = require('body-parser'); // Мидлвэр body-parser. Он самостоятельно объединяет все пакеты
+const { createUser, login } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 
@@ -25,6 +26,8 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/users')); // Используем роуты юзеров
 app.use('/cards', require('./routes/cards')); // и карточек
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.all('*', (req, res) => {
   res.status(404).send({ message: 'Неправильный путь' });

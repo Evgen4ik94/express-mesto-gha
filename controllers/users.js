@@ -1,4 +1,6 @@
 const User = require('../models/user');
+const bcrypt = require('bcryptjs');
+
 
 const { DefaultError, NotFoundError, BadRequestError } = require('../errors/errors');
 
@@ -25,17 +27,31 @@ const getUsers = (req, res) => {
     .catch(() => res.status(DefaultError).send({ message: 'Произошла ошибка' }));
 };
 
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
-    .then((user) => res.send(user))
-    // eslint-disable-next-line consistent-return
+const createUser = (req, res, next) => {
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
+      email: req.body.email,
+      password: hash,
+    }))
+    .then((user) => {
+      res.status(201).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(BadRequestError).send({ message: 'Введены некорректные данные' });
+        next(new BadRequest('Переданы некорректные данные'));
+      } else if (err.code === 11000) {
+        next(new ConflictError(`Пользователь с таким email ${req.body.email} уже существует`));
+      } else {
+        next(err);
       }
-      return res.status(DefaultError).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -68,6 +84,20 @@ const updateAvatar = (req, res) => {
         return res.status(BadRequestError).send({ message: 'Введены некорректные данные' });
       }
       return res.status(DefaultError).send({ message: 'Произошла ошибка' });
+    });
+};
+
+// Создайте контроллер login
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'Viktor-Dumanaev', { expiresIn: '10d' });
+      res.send({ token });
+    })
+    .catch(() => {
+      next(new AuthError('Неверные почта или пароль'));
     });
 };
 
