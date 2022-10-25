@@ -1,10 +1,10 @@
+const { NODE_ENV, JWT_SECRET } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
-const AuthError = require('../errors/AuthError');
 
 // Создаем контроллеры для пользователей
 const getUser = (req, res, next) => {
@@ -103,7 +103,7 @@ const getCurrentUser = (req, res, next) => {
     .then((user) => res.status(200).send({ user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        throw new BadRequestError('Переданы некорректный id');
       } else if (err.message === 'NotFound') {
         throw new NotFoundError('Пользователь не найден');
       } else {
@@ -115,15 +115,21 @@ const getCurrentUser = (req, res, next) => {
 // Создание контроллера login
 const login = (req, res, next) => {
   const { email, password } = req.body;
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'Viktor-Dumanaev', { expiresIn: '10d' });
-      res.send({ token });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV ? JWT_SECRET : 'dev-token-secret',
+        { expiresIn: '7d' },
+      );
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+        })
+        .end();
     })
-    .catch(() => {
-      next(new AuthError('Неверные почта или пароль'));
-    });
+    .catch(next);
 };
 
 module.exports = {
