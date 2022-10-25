@@ -6,6 +6,7 @@ const { cardRouter } = require('./routes/cards');
 const { userRouter } = require('./routes/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
+const { validateCreateUser } = require('./utils/utils');
 
 const { PORT = 3000 } = process.env;
 
@@ -19,7 +20,7 @@ app.use(express.json());
 
 // РОУТЫ
 app.post('/signin', login); // Роуты для логина
-app.post('/signup', createUser); // и регистрации
+app.post('/signup', validateCreateUser, createUser); // и регистрации
 
 app.use(auth); // Защищаем роуты авторизацией
 app.use('/users', userRouter);
@@ -27,7 +28,7 @@ app.use('/cards', cardRouter);
 app.use(errors());
 
 app.all('*', () => {
-  throw new NotFoundError('Запрашиваемая страница не найдена');
+  throw NotFoundError({ message: 'Запрашиваемая страница не найдена' });
 });
 
 app.listen(PORT, () => { // Сервер слушает 3000-й порт
