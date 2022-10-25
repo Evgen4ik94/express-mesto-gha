@@ -11,15 +11,15 @@ const getUser = (req, res, next) => {
   const { userId } = req.params;
   return User.findById(userId)
     .orFail(() => {
-      throw new NotFoundError('Пользователь по указанному _id не найден');
+      throw res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
     })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(res.status(400).send({ message: 'Переданы некорректные данные' }));
       }
       if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь по указанному _id не найден'));
+        next(res.status(404).send({ message: 'Пользователь по указанному _id не найден' }));
       } else {
         next(err);
       }
