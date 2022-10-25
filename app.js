@@ -6,7 +6,7 @@ const { cardRouter } = require('./routes/cards');
 const { userRouter } = require('./routes/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
-const { validateCreateUser } = require('./utils/utils');
+const { validateCreateUser, validateUserId } = require('./utils/utils');
 
 const { PORT = 3000 } = process.env;
 
@@ -20,7 +20,7 @@ app.use(express.json());
 
 // РОУТЫ
 app.post('/signin', login); // Роуты для логина
-app.post('/signup', validateCreateUser, createUser); // и регистрации
+app.post('/signup', validateCreateUser, validateUserId, createUser); // и регистрации
 
 app.use(auth); // Защищаем роуты авторизацией
 app.use('/users', userRouter);
