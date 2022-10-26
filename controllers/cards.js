@@ -6,7 +6,7 @@ const ForbiddenError = require('../errors/ForbiddenError');
 // Создаем контроллеры для карточек
 const getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.status(200).send(cards))
+    .then((cards) => res.status(200).send({ cards }))
     .catch(next);
 };
 
@@ -14,7 +14,7 @@ const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   return Card.create({ name, link, owner })
-    .then((card) => res.status(200).send(card))
+    .then((card) => res.status(200).send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Переданы некорректные данные при создании карточки');
@@ -32,7 +32,7 @@ const deleteCard = (req, res, next) => {
     })
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
-        Card.findByIdAndRemove(cardId).then(() => res.status(200).send(card));
+        Card.findByIdAndRemove(cardId).then(() => res.status(200).send({ card }));
       } else {
         throw new ForbiddenError('Удаление данной карточки вам недоступно');
       }
@@ -49,7 +49,7 @@ const likeCard = (req, res, next) => {
     throw new NotFoundError('Передан несуществующий id карточки');
   })
     // eslint-disable-next-line consistent-return
-    .then((card) => res.status(200).send(card))
+    .then((card) => res.status(200).send({ card }))
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -69,7 +69,7 @@ const dislikeCard = (req, res, next) => {
   ).orFail(() => {
     throw new NotFoundError('Передан несуществующий id карточки');
   })
-    .then((card) => res.status(200).send(card))
+    .then((card) => res.status(200).send({ card }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные для снятия лайка'));
