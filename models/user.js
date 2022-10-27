@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const isUrl = require('validator/lib/isURL');
 const isEmail = require('validator/lib/isEmail');
+const isUrl = require('validator/lib/isURL');
 const AuthError = require('../errors/AuthError');
 
 // Создаем схему для юзеров
@@ -41,7 +41,6 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: (url) => isUrl(url),
       message: 'Некорректный адрес URL',
-
     },
   },
 });
@@ -62,4 +61,4 @@ userSchema.statics.findUserByCredentials = function (email, password) {
     });
 };
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('User', userSchema);

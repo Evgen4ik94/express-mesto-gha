@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const {
-  validateUpdateUser,
+  validateUpdateProfile,
   validateUpdateAvatar,
   validateUserId,
 } = require('../utils/utils');
@@ -18,7 +18,7 @@ router.get('/', getUsers); // Возвращает всех пользовате
 router.get('/me', getCurrentUser); // Возвращает мой профиль
 router.get('/:userId', validateUserId, getUser); // Возвращает пользователя по _id
 
-router.patch('/me', validateUpdateUser, updateProfile);
+router.patch('/me', validateUpdateProfile, updateProfile);
 
 router.patch('/me/avatar', validateUpdateAvatar, updateAvatar);
 

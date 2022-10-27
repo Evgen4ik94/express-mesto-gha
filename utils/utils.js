@@ -27,7 +27,7 @@ const validateCreateUser = celebrate({
   }),
 });
 
-const validateUpdateUser = celebrate({
+const validateUpdateProfile = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
@@ -63,7 +63,7 @@ module.exports = {
   validateUrl,
   validateLogin,
   validateCreateUser,
-  validateUpdateUser,
+  validateUpdateProfile,
   validateUpdateAvatar,
   validateUserId,
   validateCreateCard,

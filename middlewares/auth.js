@@ -1,20 +1,21 @@
 const jwt = require('jsonwebtoken');
+const AuthError = require('../errors/AuthError');
 
-// Создаем middleware для авторизации
-module.exports = (req, res, next) => {
+// eslint-disable-next-line consistent-return
+module.exports = (req, _, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    throw res.status(401).send({ message: 'Необходима авторизация' });
+    throw new AuthError('Необходима авторизация');
   }
 
   const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
-    payload = jwt.verify(token, 'Evgeniy Miliakov');
+    payload = jwt.verify(token, 'dev-secret-token');
   } catch (err) {
-    throw res.status(401).send({ message: 'Необходима авторизация' });
+    throw new AuthError('Необходима авторизация');
   }
 
   req.user = payload;
