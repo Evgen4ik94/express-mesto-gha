@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const AuthError = require('../errors/AuthError');
 
 // eslint-disable-next-line consistent-return
-module.exports = (req, _, next) => {
+module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
@@ -11,7 +11,6 @@ module.exports = (req, _, next) => {
 
   const token = authorization.replace('Bearer ', '');
   let payload;
-
   try {
     payload = jwt.verify(token, 'dev-secret-token');
   } catch (err) {
@@ -20,4 +19,5 @@ module.exports = (req, _, next) => {
 
   req.user = payload;
   next();
+  return true;
 };
