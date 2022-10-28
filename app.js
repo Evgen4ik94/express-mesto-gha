@@ -30,11 +30,12 @@ app.use('/cards', cardRouter);
 app.all('*', () => {
   throw NotFoundError({ message: 'Запрашиваемая страница не найдена' });
 });
-app.use(errors());
 
 app.use((err, req, res, next) => {
   res.send({ message: err.message });
+  next();
 });
+app.use(errors());
 
 app.listen(PORT, () => { // Сервер слушает 3000-й порт
   console.log(`App listening on port ${PORT}`);
