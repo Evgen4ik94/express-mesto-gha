@@ -32,6 +32,10 @@ app.all('*', () => {
 });
 app.use(errors());
 
+app.use((err, req, res, next) => {
+  res.send({ message: err.message });
+});
+
 app.listen(PORT, () => { // Сервер слушает 3000-й порт
   console.log(`App listening on port ${PORT}`);
 });
