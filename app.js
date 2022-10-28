@@ -28,12 +28,7 @@ app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 
 app.all('*', () => {
-  throw NotFoundError({ message: 'Запрашиваемая страница не найдена' });
-});
-
-app.use((err, req, res, next) => {
-  res.send({ message: err.message });
-  next();
+  throw new NotFoundError({ message: 'Запрашиваемая страница не найдена' });
 });
 app.use(errors());
 
