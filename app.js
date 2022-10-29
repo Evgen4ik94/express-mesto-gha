@@ -7,6 +7,7 @@ const { userRouter } = require('./routes/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
 const { validateCreateUser, validateLogin } = require('./utils/utils');
+const handleError = require('./middlewares/handleError');
 
 const { PORT = 3000 } = process.env;
 
@@ -27,10 +28,12 @@ app.use(auth);
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 
-app.all('*', () => {
-  throw new NotFoundError({ message: 'Запрашиваемая страница не найдена' });
+app.use('*', auth, (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 app.use(errors());
+
+app.use((err, req, res, next) => { handleError(err, res, next); });
 
 app.listen(PORT, () => { // Сервер слушает 3000-й порт
   console.log(`App listening on port ${PORT}`);
