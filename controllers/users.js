@@ -8,20 +8,13 @@ const ConflictError = require('../errors/ConflictError');
 const AuthError = require('../errors/AuthError');
 
 // Создаем контроллеры для пользователей
-const getUser = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.params.userId);
-    if (!user) {
-      throw new NotFoundError('Пользователь с id не найден');
-    }
-    res.status(200).send({ data: user });
-  } catch (error) {
-    if (error.name === 'CastError') {
-      next(new BadRequestError('Некорректный id пользователя'));
-    } else {
-      next(error);
-    }
-  }
+const getUser = (req, res, next) => {
+  User.findById(req.params.userId)
+    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
+    .then((user) => {
+      res.send(user);
+    })
+    .catch(next);
 };
 
 const getUsers = (req, res, next) => {
