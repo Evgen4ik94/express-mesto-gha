@@ -41,24 +41,13 @@ const deleteCard = (req, res, next) => {
 };
 
 const likeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  ).orFail(() => {
-    throw new NotFoundError('Передан несуществующий id карточки');
-  })
-    // eslint-disable-next-line consistent-return
-    .then((card) => res.status(200).send({ card }))
-    // eslint-disable-next-line consistent-return
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Некорректный id карточки'));
-      }
-      if (err.name === 'NotFound') {
-        next(new NotFoundError('Передан несуществующий id карточки'));
-      }
-    });
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+    .orFail(new NotFoundError('Карточка не найдена'))
+    .populate('owner')
+    .then((card) => {
+      res.send(card);
+    })
+    .catch(next);
 };
 
 const dislikeCard = (req, res, next) => {
