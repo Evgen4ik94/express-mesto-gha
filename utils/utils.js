@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const { celebrate, Joi } = require('celebrate');
 const isUrl = require('validator/lib/isURL');
 const BadRequestError = require('../errors/BadRequestError');
