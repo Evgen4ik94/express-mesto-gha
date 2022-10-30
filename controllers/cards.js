@@ -41,11 +41,15 @@ const deleteCard = (req, res, next) => {
 };
 
 const likeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .orFail(new NotFoundError('Карточка не найдена'))
-    .populate('owner')
-    .then((card) => {
-      res.send(card);
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((cards) => {
+      if (cards == null) {
+        throw new NotFoundError('Объект не найден');
+      } res.send({ data: cards });
     })
     .catch(next);
 };
