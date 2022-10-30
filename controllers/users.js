@@ -50,37 +50,23 @@ const createUser = (req, res, next) => {
 
 // Обновление информации профиля
 const updateProfile = (req, res, next) => {
-  const { name, about } = req.body;
+  const { name = false, about = false } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
-    .orFail(() => {
-      throw new NotFoundError('Пользователь с указанным _id не найден');
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+    .then((user) => {
+      res.send(user);
     })
-    .then((user) => res.status(200).send({ user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные при обновлении профиля');
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
+  const { avatar = false } = req.body;
 
-  return User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
-    .orFail(() => {
-      throw new NotFoundError('Пользователь с указанным _id не найден');
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+    .then((user) => {
+      res.send(user);
     })
-    .then((user) => res.status(200).send({ user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные при обновлении аватара');
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const getCurrentUser = (req, res, next) => {
