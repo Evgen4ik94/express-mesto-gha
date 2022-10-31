@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     select: false, // Так по умолчанию хеш пароля пользователя не будет возвращаться из базы.
-    minlength: 8,
   },
   name: {
     type: String,
